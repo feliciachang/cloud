@@ -31,6 +31,10 @@ import TeamsContainer from './containers/AdminPage/ExpeditionPage/TeamsSection'
 import UploaderContainer from './containers/AdminPage/ExpeditionPage/UploaderSection'
 import ThemeContainer from './containers/AdminPage/ExpeditionPage/ThemeSection'
 
+import ProjectGridContainer from './containers/AdminPage/ProjectGrid'
+import ProjectSettingsContainer from './containers/AdminPage/ProjectSettings'
+
+
 import FKApiClient from './api/api.js'
 
 document.getElementById('root').remove()
@@ -62,52 +66,31 @@ const routes = (
       <Route path="signup"/>
       <Route path="signin"/>
     </Route>
-    <Route path="admin" 
-      component={AdminPageContainer} 
+
+    <Route 
+      path="admin"
+      component={ AdminPageContainer }
       onEnter={(state, replace, callback) => {
         checkAuthentication(state, replace)
         store.dispatch(actions.requestUser((user) => {
           store.dispatch(actions.requestProjects((projects) => {
             callback()
-            const projectID = state.params.projectID
-            if (projects.size === 0) {
-              browserHistory.push('/admin/new-project')
-            } else {
-              if (!projectID) {
-                browserHistory.push('/admin/' + projects.first().get('id'))
-              } else {
-                if (projects.some(p => p.get('id') === projectID)) {
-                  store.dispatch(actions.setCurrentProject(projectID))
-                } else {
-                  browserHistory.push('/admin/' + projects.first().get('id'))
-                }
-              }
-            }
           }))
         }))
       }}
     >
-
       <IndexRoute
-        component={ProfileSection}
+        component={ ProjectGridContainer }
         onEnter={(state) => {
-          store.dispatch(actions.setBreadcrumbs(0, null))
+          store.dispatch(actions.setBreadcrumbs(0, 'Projects', '/admin'))
         }}
       />
       <Route 
         path="profile"
-        component={ProfileSection}
-      />
-
-      <Route 
-        path="new-project" 
-        component={NewProjectContainer}
-        onEnter={() => {
-          store.dispatch(actions.newProject())
-          store.dispatch(actions.setBreadcrumbs(0, 'New Project', '/new-project'))
+        onEnter={(state) => {
+          store.dispatch(actions.setBreadcrumbs(0, 'Profile settings', '/profile'))
         }}
       />
-
       <Route
         path=":projectID"
         onEnter={(state, replace, callback) => {
@@ -118,27 +101,6 @@ const routes = (
           store.dispatch(actions.setBreadcrumbs(0, 'Project: ' + projectName, '/admin/' + projectID))
           store.dispatch(actions.requestExpeditions(projectID, (expeditions) => {
             callback()
-            if (expeditions.size === 0) {
-              browserHistory.push('/admin/' + projectID + '/new-expedition')
-              store.dispatch(actions.setBreadcrumbs(1, 'New Expedition', '/admin/' + projectID + '/new-expedition'))
-            } else {
-              let expeditionName = ''
-              if (!expeditionID) {
-                expeditionID = expeditions.first().get('id')
-                expeditionName = store.getState().expeditions.getIn(['expeditions', expeditionID, 'name'])
-                browserHistory.push('/admin/' + projectID + '/' + expeditionID)
-              } else {
-                if (expeditions.some(e => e.get('id') === expeditionID)) {
-                  expeditionName = store.getState().expeditions.getIn(['expeditions', expeditionID, 'name'])
-                  store.dispatch(actions.setCurrentExpedition(expeditionID))
-                } else {
-                  expeditionID = expeditions.first().get('id')
-                  expeditionName = store.getState().expeditions.getIn(['expeditions', expeditionID, 'name'])
-                  browserHistory.push('/admin/' + projectID + '/' + expeditions.first().get('id'))
-                }
-              }
-              store.dispatch(actions.setBreadcrumbs(1, 'Expedition: ' + expeditionName, '/admin/' + projectID + '/' + expeditionID))
-            }
           }))
         }}
         onChange={(state) => {
@@ -147,42 +109,12 @@ const routes = (
           store.dispatch(actions.setBreadcrumbs(0, 'Project: ' + projectName, '/admin/' + projectID))
         }}
       >
-
-        <Route 
-          path="new-expedition" 
-          onEnter={(state) => {
-            store.dispatch(actions.newExpedition())
-            store.dispatch(actions.setBreadcrumbs(1, 'New Expedition', '/admin/' + state.params.projectID + '/new-expedition'))
-          }}
-          onChange={(state) => {
-            store.dispatch(actions.setBreadcrumbs(1, 'New Expedition', '/admin/' + state.params.projectID + '/new-expedition'))
-          }}
-        >
-          <IndexRoute component={NewGeneralSettingsContainer}/>
-          <Route 
-            path="general-settings"
-            component={NewGeneralSettingsContainer}
-            onEnter={(state) => {
-              store.dispatch(actions.setBreadcrumbs(2, 'General Settings', '/admin/' + state.params.projectID + '/new-expedition/general-settings'))
-            }}
-          />
-          <Route 
-            path="inputs"
-            component={NewInputsContainer}
-            onEnter={(state) => {
-              store.dispatch(actions.setBreadcrumbs(2, 'Input Setup', '/admin/' + state.params.projectID + '/new-expedition/inputs'))
-            }}
-          />
-          <Route 
-            path="confirmation"
-            component={NewConfirmationContainer}
-            onEnter={(state) => {
-              store.dispatch(actions.setBreadcrumbs(2, 'Confirmation', '/admin/' + state.params.projectID + '/new-expedition/confirmation'))
-            }}
-          />
-        </Route>
-
-        <Route path=":expeditionID" 
+        <IndexRoute
+          component={ ProjectSettingsContainer }
+        />
+        <Route
+          path=":expeditionID"
+          component={ ExpeditionPageContainer }
           onLeave={() => {
             store.dispatch(actions.setCurrentExpedition(null))
           }}
@@ -198,17 +130,7 @@ const routes = (
             store.dispatch(actions.setBreadcrumbs(1, 'Expedition: ' + expeditionName, '/admin/' + state.params.projectID + '/' + expeditionID))
           }}
         >
-          <IndexRoute component={ExpeditionPageContainer}/>
-          <Route
-            path="dashboard"
-            component={ExpeditionPageContainer}
-            onEnter={(state) => {
-              store.dispatch(actions.setBreadcrumbs(1, 'Expedition: ' + expeditionName, '/admin/' + state.params.projectID + '/' + expeditionID))
-            }}
-          />
-          <Route
-            path="general-settings"
-            component={GeneralSettingsContainer}
+          <IndexRoute component={ GeneralSettingsContainer }
             onEnter={(state) => {
               store.dispatch(actions.setBreadcrumbs(2, 'General Settings', '/admin/' + state.params.projectID + '/' + state.params.expeditionID + '/general-settings'))
             }}

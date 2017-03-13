@@ -586,19 +586,56 @@ export function initUploaderPage (callback) {
     dispatch({
       type: REQUEST_UPLOADERS
     })
-    // const projectID = getState().expeditions.getIn(['currentProject', 'id'])
-    // const expeditionID = getState().expeditions.getIn(['currentExpedition', 'id'])
+    const projectID = getState().expeditions.getIn(['currentProject', 'id'])
+    const expeditionID = getState().expeditions.getIn(['currentExpedition', 'id'])
     // FKApiClient.getInputs(projectID, expeditionID)
     //   .then((res) => {
-    //     const inputs = I.fromJS(res).map((i) => {
-    //       return i.get('slug')
-    //     })
-    //     dispatch({
-    //       type: RECEIVE_INPUTS,
-    //       expeditionID,
-    //       inputs
-    //     })
+    window.setTimeout((res) => {
+        const uploaders = I.fromJS({
+          'sighting' : {
+            name: 'Sightings',
+            input: 'sightings',
+            fields: [
+              {
+                id: 'name',
+                name: 'Species Name',
+                type: 'text'
+              },
+              {
+                id: 'count',
+                name: 'Count',
+                type: 'number'
+              },
+              {
+                id: 'file',
+                name: 'File',
+                type: 'file'
+              },
+              {
+                id: 'date',
+                name: 'Date',
+                type: 'date'
+              },
+              {
+                id: 'time',
+                name: 'Time',
+                type: 'time'
+              },
+              {
+                id: 'notes',
+                name: 'Notes',
+                type: 'text'
+              }
+            ]
+          }
+        })
+        dispatch({
+          type: RECEIVE_UPLOADERS,
+          expeditionID,
+          uploaders
+        })
         callback()
+    }, 500)
       // })
   }
 }

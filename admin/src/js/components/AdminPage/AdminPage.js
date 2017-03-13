@@ -1,8 +1,5 @@
 import React, {PropTypes, Children} from 'react'
 import { Link } from 'react-router'
-import Navigation from '../Navigation/Navigation'
-import BreadCrumbs from './BreadCrumbs'
-import Modal from './Modal'
 
 class AdminPage extends React.Component {
 
@@ -43,24 +40,14 @@ class AdminPage extends React.Component {
         return null
       }
     }
-
+    
+    
     return (
-      <div id="admin-page" className="page">
-        { modalComponent() }
-        <Navigation 
-          { ...params }
-          expeditions={ expeditions }
-          projects={ projects }
-          requestSignOut={ requestSignOut }
-          user={ user }
-        />
-        <div className="page-content">
-          <BreadCrumbs 
-            { ...location }
-            breadcrumbs={ breadcrumbs }
-          />
-          { children }
-        </div>
+      <div
+        id="admin-page"
+        className="page"
+      >
+        { children }
       </div>
     )
   }

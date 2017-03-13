@@ -1,7 +1,10 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
 import { Link } from 'react-router'
+import Navigation from '../../Navigation/Navigation'
+import BreadCrumbs from './../BreadCrumbs'
 
-class DashboardSection extends React.Component {
+
+class ExpeditionPage extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
@@ -12,26 +15,38 @@ class DashboardSection extends React.Component {
   render () {
 
     const {
-      currentExpedition
+      children,
+      currentExpedition,
+      params,
+      errors,
+      location,
+      expeditions,
+      projects,
+      user,
+      requestSignOut
     } = this.props
 
-    if (!currentExpedition) {
-      return (
-        <li className="spinning-wheel"></li>
-      )
-    }
-
     return (
-      <div id="dashboard-section" className="section">
-        <h1>{currentExpedition.get('name')}</h1>
-        <h2>Dashboard section</h2>
+      <div id="admin-page" className="page">
+        <Navigation 
+          { ...params }
+          expeditions={ expeditions }
+          projects={ projects }
+          requestSignOut={ requestSignOut }
+          user={ user }
+        />
+        <div className="page-content">
+          {/*
+            <BreadCrumbs 
+              { ...location }
+              breadcrumbs={ breadcrumbs }
+            />
+          */}
+          { children }
+        </div>
       </div>
     )
   }
 }
 
-DashboardSection.propTypes = {
-
-}
-
-export default DashboardSection
+export default ExpeditionPage

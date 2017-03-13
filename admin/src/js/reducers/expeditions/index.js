@@ -26,7 +26,8 @@ export const initialState = I.fromJS({
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing.',
       setupType: 'token'
     }
-  }
+  },
+  uploaders: {}
 })
 
 const expeditionReducer = (state = initialState, action) => {
@@ -121,6 +122,35 @@ const expeditionReducer = (state = initialState, action) => {
           )
       }
 
+      case actions.SET_EXPEDITION_PROPERTY: {
+        const newState = state.setIn(
+          ['currentExpedition'].concat(action.keyPath),
+          action.value
+        )
+        if (!!action.keyPath && action.keyPath.length === 1 && action.keyPath[0] === 'name') {
+          return newState
+            .setIn(['currentExpedition', 'id'], slug(action.value))
+        } else {
+          return newState 
+        }
+      }
+
+      case actions.SAVE_EXPEDITION: {
+        const expedition = state.get('currentExpedition')
+        return state.setIn(['expeditions', expedition.get('id')], expedition)
+          .set('currentExpedition', null)
+      }
+
+      case actions.SET_CURRENT_PROJECT: {
+        return state.set('currentProject', state.getIn(['projects', action.projectID]))
+      }
+
+      case actions.SET_CURRENT_EXPEDITION: {
+        const expedition = state.getIn(['expeditions', action.expeditionID])
+        return state
+          .set('currentExpedition', expedition)
+      }
+
       case actions.ADD_INPUT: {
         if (!state.getIn(['currentExpedition', 'inputs']).includes(action.id)) {
           return state
@@ -151,34 +181,15 @@ const expeditionReducer = (state = initialState, action) => {
           .setIn(['currentExpedition', 'inputs'], action.inputs)
       }
 
-      case actions.SET_EXPEDITION_PROPERTY: {
-        const newState = state.setIn(
-          ['currentExpedition'].concat(action.keyPath),
-          action.value
-        )
-        if (!!action.keyPath && action.keyPath.length === 1 && action.keyPath[0] === 'name') {
-          return newState
-            .setIn(['currentExpedition', 'id'], slug(action.value))
-        } else {
-          return newState 
-        }
-      }
-
-      case actions.SAVE_EXPEDITION: {
-        const expedition = state.get('currentExpedition')
-        return state.setIn(['expeditions', expedition.get('id')], expedition)
-          .set('currentExpedition', null)
-      }
-
-      case actions.SET_CURRENT_PROJECT: {
-        return state.set('currentProject', state.getIn(['projects', action.projectID]))
-      }
-
-      case actions.SET_CURRENT_EXPEDITION: {
-        const expedition = state.getIn(['expeditions', action.expeditionID])
+      case actions.RECEIVE_UPLOADERS: {
         return state
-          .set('currentExpedition', expedition)
+          // .set('uploaders', action.uploaders)
+          // .setIn(
+          //   ['currentExpedition', 'uploaders'],
+          //   action.uploaders.toList()
+          // )
       }
+
 
       // case actions.START_EDITING_TEAM: {
       //   if (!state.get('editedTeam')) {

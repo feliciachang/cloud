@@ -1,17 +1,19 @@
 
 import { connect } from 'react-redux'
-import DashboardSection from '../../../components/AdminPage/ExpeditionPage/ExpeditionPage'
+import ExpeditionPage from '../../../components/AdminPage/ExpeditionPage/ExpeditionPage'
 import * as actions from '../../../actions'
 
 const mapStateToProps = (state, ownProps) => {
 
-  const expeditions = state.expeditions
-  // const currentExpeditionID = expeditions.get('currentExpeditionID')
-  const currentExpedition = expeditions.get('currentExpedition')
+  const projects = state.expeditions.get('projects')
+  const expeditions = state.expeditions.get('expeditions')
+  const user = state.expeditions.get('user')
 
   return {
     ...ownProps,
-    currentExpedition
+    expeditions,
+    projects,
+    user
   }
 }
 
@@ -19,6 +21,9 @@ const mapDispatchToProps = (dispatch, ownProps, state) => {
   return {
     setExpeditionProperty (key, value) {
       return dispatch(actions.setExpeditionProperty(key, value))
+    },
+    requestSignOut () {
+      return dispatch(actions.requestSignOut())
     }
     // updateExpedition (expedition) {
     //   return dispatch(actions.updateExpedition(expedition))
@@ -26,9 +31,9 @@ const mapDispatchToProps = (dispatch, ownProps, state) => {
   }
 }
 
-const DashboardSectionContainer = connect(
+const ExpeditionPageContainer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(DashboardSection)
+)(ExpeditionPage)
 
-export default DashboardSectionContainer
+export default ExpeditionPageContainer
