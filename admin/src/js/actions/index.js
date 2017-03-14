@@ -662,8 +662,8 @@ MODAL ACTIONS
 */
 
 export const PROMPT_MODAL = 'PROMPT_MODAL'
-export const CLOSE_MODAL_AND_CANCEL = 'CLOSE_MODAL_AND_CANCEL'
-export const CLOSE_MODAL_AND_SAVE = 'CLOSE_MODAL_AND_SAVE'
+export const CLOSE_MODAL = 'CLOSE_MODAL'
+export const CANCEL_PROJECT = 'CANCEL_PROJECT'
 
 export function promptModal (modalType) {
   return function (dispatch, getState) {
@@ -684,23 +684,32 @@ export function promptModal (modalType) {
 
 export function closeModalAndCancel () {
   return function (dispatch, getState) {
-    dispatch(
-      {
-        type: CLOSE_MODAL_AND_CANCEL
+    // Dispatch actions based on modal type
+    switch (getState().expeditions.getIn(['modal', 'type'])) {
+      case 'new project': {
+        return dispatch([
+          {
+              type: CANCEL_PROJECT
+          },
+          {
+              type: CLOSE_MODAL
+          }
+        ])
       }
-    )
+    }
   }
 }
 
 export function closeModalAndSave () {
   return function (dispatch, getState) {
+    // Dispatch actions based on modal type
     switch (getState().expeditions.getIn(['modal', 'type'])) {
       case 'new project': {
         const name = getState().expeditions.getIn(['currentProject', 'name'])
         return dispatch(saveProject(name, () => {
           dispatch(
             {
-              type: CLOSE_MODAL_AND_SAVE
+              type: CLOSE_MODAL
             }
           )
         })) 

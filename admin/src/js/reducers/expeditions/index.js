@@ -56,29 +56,9 @@ const expeditionReducer = (state = initialState, action) => {
           .setIn(['modal', 'type'], action.modalType)
       }
 
-      case actions.CLOSE_MODAL_AND_CANCEL: {
-        switch (state.getIn(['modal', 'type'])) {
-          case 'new project': {
-            return state
-              .set('currentProject', null)
-              .setIn(['modal', 'type'], null)
-          }
-          default: {
-            return state
-          }
-        }
-      }
-
-      case actions.CLOSE_MODAL_AND_SAVE: {
-        switch (state.getIn(['modal', 'type'])) {
-          case 'new project': {
-            return state
-              .setIn(['modal', 'type'], null)
-          }
-          default: {
-            return state
-          }
-        }
+      case actions.CLOSE_MODAL: {
+        return state
+          .setIn(['modal', 'type'], null)
       }
 
       case actions.RECEIVE_PROJECTS: {
@@ -122,6 +102,11 @@ const expeditionReducer = (state = initialState, action) => {
         } else {
           return newState 
         }
+      }
+
+      case actions.CANCEL_PROJECT: {
+        return state
+          .set('currentProject', null)
       }
 
       case actions.SAVE_PROJECT: {
