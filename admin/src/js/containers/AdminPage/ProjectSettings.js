@@ -4,20 +4,20 @@ import ProjectSettings from '../../components/AdminPage/ProjectSettings'
 import * as actions from '../../actions'
 
 const mapStateToProps = (state, ownProps) => {
-  const exp = state.expeditions
-  // const projectID = expeditions.getIn(['currentProject', 'id'])
-  // const expedition = expeditions.get('currentExpedition')
-
-  const currentProject = exp.get('currentProject')
-  const expeditions = exp.get('expeditions')
+  const currentProject = state.expeditions.get('currentProject')
+  const expeditions = state.expeditions.get('expeditions')
     .filter((e) => {
       return currentProject.get('expeditions').includes(e.get('id'))
     })
+  const name = currentProject.get('name')
+  const description = currentProject.get('description')
 
   return {
     ...ownProps,
     currentProject,
-    expeditions
+    expeditions,
+    name,
+    description
   }
 }
 
