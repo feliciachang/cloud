@@ -10,7 +10,8 @@ class ProjectSettings extends React.Component {
       currentProject,
       expeditions,
       name,
-      description
+      description,
+      promptModalNewExpedition
     } = this.props
 
     return (
@@ -51,12 +52,12 @@ class ProjectSettings extends React.Component {
                   )
                 })
               }
-              {
-                (!expeditions || expeditions.size === 0) &&
-                <div className="button">
-                  Create new expedition
-                </div>
-              }
+              <div
+                className="button"
+                onClick={ promptModalNewExpedition }
+              >
+                Create new expedition
+              </div>
             </div>
           </div>
           <div className="column">

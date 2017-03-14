@@ -43,16 +43,6 @@ export const SAVE_PROJECT = 'SAVE_PROJECT'
 export const REQUEST_PROJECTS = 'REQUEST_PROJECTS'
 export const RECEIVE_PROJECTS = 'RECEIVE_PROJECTS'
 
-export function newProject () {
-  return function (dispatch, getState) {
-    dispatch(
-      {
-        type: NEW_PROJECT
-      }
-    )
-  }
-}
-
 export function requestProjects (callback) {
   return function (dispatch, getState) {
     FKApiClient.getProjects()
@@ -139,17 +129,6 @@ export const ADD_INPUT = 'ADD_INPUT'
 export const REMOVE_INPUT = 'REMOVE_INPUT'
 export const RECEIVE_TOKEN = 'RECEIVE_TOKEN'
 
-export function newExpedition () {
-  return function (dispatch, getState) {
-    console.log('wat? newexp')
-    dispatch(
-      {
-        type: NEW_EXPEDITION
-      }
-    )
-  }
-}
-
 export function setCurrentExpedition (id) {
   return function (dispatch, getState) {
     dispatch({
@@ -220,55 +199,55 @@ export function requestExpeditions (projectID, callback) {
   }
 }
 
-export function saveGeneralSettings (callback) {
-  return function (dispatch, getState) {
-    const projectID = getState().expeditions.getIn(['currentProject', 'id'])
-    const expedition = getState().expeditions.get('currentExpedition')
-    const expeditionName = expedition.get('name')
-    const expeditionID = expedition.get('id')
-    FKApiClient.postGeneralSettings(projectID, expeditionName)
-      .then(res => {
-        console.log('expeditions successfully saved:', res)
-        if (!res) {
-          // error
-          console.log('error with expedition creation')
-        } else {
-          dispatch({
-            type: SET_EXPEDITION_PROPERTY,
-            keyPath: ['id'],
-            value: expeditionID
-          })
-          FKApiClient.addExpeditionToken(projectID, expeditionID)
-            .then(res => {
-              console.log('server response:', res)
-              if(!res) {
-                console.log('no response')
-              } else {
-                console.log('storing token')
-                dispatch([
-                  {
-                    type: RECEIVE_TOKEN,
-                    token: res.ID
-                  },
-                  {
-                    type: SET_ERROR,
-                    errors: null
-                  }
-                ])
-                if (!!callback) callback()
-              }
-            })
-            .catch(err => {})
-        }
-      })
-      .catch(error => {
-        dispatch({
-          type: SET_ERROR,
-          errors: I.fromJS(error.message)
-        })
-      })
-  }
-}
+// export function saveGeneralSettings (callback) {
+  // return function (dispatch, getState) {
+    // const projectID = getState().expeditions.getIn(['currentProject', 'id'])
+    // const expedition = getState().expeditions.get('currentExpedition')
+    // const expeditionName = expedition.get('name')
+    // const expeditionID = expedition.get('id')
+    // FKApiClient.postGeneralSettings(projectID, expeditionName)
+    //   .then(res => {
+    //     console.log('expeditions successfully saved:', res)
+    //     if (!res) {
+    //       // error
+    //       console.log('error with expedition creation')
+    //     } else {
+    //       dispatch({
+    //         type: SET_EXPEDITION_PROPERTY,
+    //         keyPath: ['id'],
+    //         value: expeditionID
+    //       })
+    //       FKApiClient.addExpeditionToken(projectID, expeditionID)
+    //         .then(res => {
+    //           console.log('server response:', res)
+    //           if(!res) {
+    //             console.log('no response')
+    //           } else {
+    //             console.log('storing token')
+    //             dispatch([
+    //               {
+    //                 type: RECEIVE_TOKEN,
+    //                 token: res.ID
+    //               },
+    //               {
+    //                 type: SET_ERROR,
+    //                 errors: null
+    //               }
+    //             ])
+    //             if (!!callback) callback()
+    //           }
+    //         })
+    //         .catch(err => {})
+    //     }
+    //   })
+    //   .catch(error => {
+    //     dispatch({
+    //       type: SET_ERROR,
+    //       errors: I.fromJS(error.message)
+    //     })
+    //   })
+  // }
+// }
 
 export function submitInputs () {
   return function (dispatch, getState) {
@@ -357,13 +336,13 @@ export function removeInput (id) {
   }
 }
 
-export function saveExpedition () {
-  return function (dispatch, getState) {
-    dispatch ({
-      type: SAVE_EXPEDITION
-    })
-  }
-}
+// export function saveExpedition () {
+//   return function (dispatch, getState) {
+//     dispatch ({
+//       type: SAVE_EXPEDITION
+//     })
+//   }
+// }
 
 /*
 
@@ -667,18 +646,31 @@ export const CANCEL_PROJECT = 'CANCEL_PROJECT'
 
 export function promptModal (modalType) {
   return function (dispatch, getState) {
-    const actions = [
-      {
-        type: PROMPT_MODAL,
-        modalType
+    // Dispatch actions based on modal type
+    switch (modalType) {
+      case 'new project': {
+        return dispatch([
+          {
+              type: NEW_PROJECT
+          },
+          {
+              type: PROMPT_MODAL,
+              modalType: 'new project'
+          }
+        ])
       }
-    ]
-    if (modalType === 'new project') {
-      actions.unshift({
-        type: NEW_PROJECT
-      })
+      case 'new expedition': {
+        return dispatch([
+          {
+              type: NEW_EXPEDITION
+          },
+          {
+              type: PROMPT_MODAL,
+              modalType: 'new expedition'
+          }
+        ])
+      }
     }
-    dispatch(actions)
   }
 }
 
@@ -696,6 +688,16 @@ export function closeModalAndCancel () {
           }
         ])
       }
+      case 'new expedition': {
+        return dispatch([
+          {
+              type: CANCEL_EXPEDITION
+          },
+          {
+              type: CLOSE_MODAL
+          }
+        ])
+      }
     }
   }
 }
@@ -705,8 +707,17 @@ export function closeModalAndSave () {
     // Dispatch actions based on modal type
     switch (getState().expeditions.getIn(['modal', 'type'])) {
       case 'new project': {
+        return dispatch(saveProject(() => {
+          dispatch(
+            {
+              type: CLOSE_MODAL
+            }
+          )
+        }))
+      }
+      case 'new expedition': {
         const name = getState().expeditions.getIn(['currentProject', 'name'])
-        return dispatch(saveProject(name, () => {
+        return dispatch(saveExpedition(() => {
           dispatch(
             {
               type: CLOSE_MODAL
@@ -718,8 +729,9 @@ export function closeModalAndSave () {
   }
 }
 
-function saveProject (name, callback) {
+function saveProject (callback) {
   return function (dispatch, getState) {
+    const name = getState().expeditions.getIn(['currentProject', 'name'])
     FKApiClient.createProjects(name)
       .then(res => {
         dispatch({
@@ -727,6 +739,59 @@ function saveProject (name, callback) {
           id: res.slug
         })
         callback()
+      })
+      .catch(error => {
+        dispatch({
+          type: SET_ERROR,
+          errors: I.fromJS(error.message)
+        })
+      })
+  }
+}
+
+function saveExpedition (callback) {
+  return function (dispatch, getState) {
+    const projectID = getState().expeditions.getIn(['currentProject', 'id'])
+    const expedition = getState().expeditions.get('currentExpedition')
+    const expeditionName = expedition.get('name')
+    const expeditionID = expedition.get('id')
+    FKApiClient.postGeneralSettings(projectID, expeditionName)
+      .then(resExpedition => {
+        console.log('expeditions successfully saved:', resExpedition)
+        if (!resExpedition) {
+          console.log('error with expedition creation')
+        } else {
+          dispatch({
+            type: SET_EXPEDITION_PROPERTY,
+            keyPath: ['id'],
+            value: resExpedition.slug
+          })
+          FKApiClient.addExpeditionToken(projectID, expeditionID)
+            .then(resToken => {
+              console.log('server response:', resToken)
+              if(!resToken) {
+                console.log('no response')
+              } else {
+                console.log('storing token')
+                dispatch([
+                  {
+                    type: RECEIVE_TOKEN,
+                    token: resToken.ID
+                  },
+                  {
+                    type: SET_ERROR,
+                    errors: null
+                  },
+                  {
+                    type: SAVE_EXPEDITION,
+                    id: resExpedition.slug
+                  }
+                ])
+                callback()
+              }
+            })
+            .catch(err => {})
+        }
       })
       .catch(error => {
         dispatch({

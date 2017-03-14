@@ -1,13 +1,15 @@
 
 import React from 'react'
+import slug from 'slug'
 
-class ModalNewProjectContent extends React.Component {
+class ModalNewExpeditionContent extends React.Component {
   render () {
     const {
+      projectName,
       properties,
       closeAndCancel,
       closeAndSave,
-      setProjectProperty,
+      setExpeditionProperty
     } = this.props
 
     const name = properties.get('name')
@@ -17,7 +19,7 @@ class ModalNewProjectContent extends React.Component {
       <div>
         <div className="header">
           <h2>
-            Create new project
+            Create new expedition
           </h2>
         </div>
         <div className="content">
@@ -29,21 +31,29 @@ class ModalNewProjectContent extends React.Component {
               type="text"
               className={
                 '' +
-                (!!name && name.toLowerCase() !== 'project name' ? '' : ' default')
+                (!!name && name.toLowerCase() !== 'expedition name' ? '' : ' default')
               }
               value={name}
               onFocus={(e) => {
-                if (!name || name === 'Project Name') {
-                  setProjectProperty(['name'], '')
+                if (!name || name === 'Expedition Name') {
+                  setExpeditionProperty(['name'], '')
                 }
               }}
               onChange={(e) => {
-                setProjectProperty(['name'], e.target.value)
+                setExpeditionProperty(['name'], e.target.value)
               }}
             />
             <p className="error"></p>
           </div>
-          <div className="field">
+        <div className="field">
+          <p className="label">
+            URL:
+          </p>
+          <p>
+            { `https://${projectName}.fieldkit.org/${ slug(name) }` }
+          </p>
+        </div>
+        <div className="field">
             <p className="label">
               Description:
             </p>
@@ -51,16 +61,16 @@ class ModalNewProjectContent extends React.Component {
               type="text"
               className={
                 '' +
-                (!!description && description.toLowerCase() !== 'project description' ? '' : ' default')
+                (!!description && description.toLowerCase() !== 'expedition description' ? '' : ' default')
               }
               value={description}
               onFocus={(e) => {
-                if (!description || description === 'Project Description') {
-                  setProjectProperty(['description'], '')
+                if (!description || description === 'Expedition Description') {
+                  setExpeditionProperty(['description'], '')
                 }
               }}
               onChange={(e) => {
-                setProjectProperty(['description'], e.target.value)
+                setExpeditionProperty(['description'], e.target.value)
               }}
             />
             <p className="error"></p>
@@ -85,4 +95,4 @@ class ModalNewProjectContent extends React.Component {
   }
 }
 
-export default ModalNewProjectContent
+export default ModalNewExpeditionContent

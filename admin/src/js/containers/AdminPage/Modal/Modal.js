@@ -13,6 +13,14 @@ const mapStateToProps = (state, ownProps) => {
       properties = properties
         .set('name', state.expeditions.getIn(['currentProject', 'name']))
         .set('description', state.expeditions.getIn(['currentProject', 'description']))
+      break
+    }
+    case 'new expedition': {
+      properties = properties
+        .set('name', state.expeditions.getIn(['currentExpedition', 'name']))
+        .set('description', state.expeditions.getIn(['currentExpedition', 'description']))
+        .set('projectName', state.expeditions.getIn(['currentProject', 'name']))
+      break
     }
   }
 
@@ -26,6 +34,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     setProjectProperty (key, value) {
       return dispatch(actions.setProjectProperty(key, value))
+    },
+    setExpeditionProperty (key, value) {
+      return dispatch(actions.setExpeditionProperty(key, value))
     },
     closeAndCancel () {
       return dispatch(actions.closeModalAndCancel())

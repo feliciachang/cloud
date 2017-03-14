@@ -1,4 +1,6 @@
 
+// TODO: Break down into multiple reducers
+
 import * as actions from '../../actions'
 import I from 'immutable'
 import slug from 'slug'
@@ -127,11 +129,10 @@ const expeditionReducer = (state = initialState, action) => {
             I.fromJS({
               id: expeditionID,
               name: 'Expedition Name',
-              description: 'Enter a description',
+              description: 'Expedition Description',
               startDate: new Date(),
               teams: [],
               inputs: [],
-              selectedPreset: null,
               token: ''
             })
           )
@@ -151,9 +152,17 @@ const expeditionReducer = (state = initialState, action) => {
       }
 
       case actions.SAVE_EXPEDITION: {
-        const expedition = state.get('currentExpedition')
-        return state.setIn(['expeditions', expedition.get('id')], expedition)
-          .set('currentExpedition', null)
+        return state
+          .setIn(['currentExpedition', 'id'], action.id)
+          .setIn(
+            ['expeditions', action.id],
+            state.get('currentExpedition')
+              .set('id', action.id)
+          )
+          .setIn(
+            ['currentProject', 'expeditions'],
+            state.getIn(['currentProject', 'expeditions']).push(action.id)
+          )
       }
 
       case actions.SET_CURRENT_PROJECT: {

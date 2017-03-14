@@ -25,6 +25,9 @@ const mapDispatchToProps = (dispatch, ownProps, state) => {
   return {
     setExpeditionProperty (keyPath, value) {
       return dispatch(actions.setExpeditionProperty(keyPath, value))
+    },
+    promptModalNewExpedition () {
+      return dispatch(actions.promptModal('new expedition'))
     }
   }
 }

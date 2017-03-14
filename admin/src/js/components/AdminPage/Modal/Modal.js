@@ -1,6 +1,7 @@
 
 import React from 'react'
 import ModalNewProjectContent from './ModalNewProjectContent'
+import ModalNewExpeditionContent from './ModalNewExpeditionContent'
 
 class Modal extends React.Component {
   constructor (props) {
@@ -13,6 +14,7 @@ class Modal extends React.Component {
       type,
       properties,
       setProjectProperty,
+      setExpeditionProperty,
       closeAndCancel,
       closeAndSave
     } = this.props
@@ -22,6 +24,16 @@ class Modal extends React.Component {
           <ModalNewProjectContent
             properties={ properties }
             setProjectProperty={ setProjectProperty }
+            closeAndCancel={ closeAndCancel }
+            closeAndSave={ closeAndSave }
+          />
+        )
+      }
+      case ('new expedition') : {
+        return (
+          <ModalNewExpeditionContent
+            properties={ properties }
+            setExpeditionProperty={ setExpeditionProperty }
             closeAndCancel={ closeAndCancel }
             closeAndSave={ closeAndSave }
           />

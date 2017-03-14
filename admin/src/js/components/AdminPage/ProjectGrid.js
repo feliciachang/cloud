@@ -12,8 +12,6 @@ class ProjectGrid extends React.Component {
       promptModalNewProject
     } = this.props
 
-    console.log('aga', user.toJS())
-
     return (
       <div id="project-grid" className="project-grid">
         <div className="greetings">
