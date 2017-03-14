@@ -122,25 +122,6 @@ export function setProjectProperty (keyPath, value) {
   }
 }
 
-export function saveProject (id, name) {
-  return function (dispatch, getState) {
-    FKApiClient.createProjects(name)
-      .then(res => {
-        console.log('project created', res)
-        dispatch({
-          type: SAVE_PROJECT,
-          id
-        })
-        browserHistory.push('/admin/' + id)
-      })
-      .catch(error => {
-        dispatch({
-          type: SET_ERROR,
-          errors: I.fromJS(error.message)
-        })
-      })
-  }
-}
 
 /*
 
@@ -669,6 +650,81 @@ export function initThemePage (callback) {
     //     })
         callback()
       // })
+  }
+}
+
+
+
+/*
+
+MODAL ACTIONS
+
+*/
+
+export const PROMPT_MODAL = 'PROMPT_MODAL'
+export const CLOSE_MODAL_AND_CANCEL = 'CLOSE_MODAL_AND_CANCEL'
+export const CLOSE_MODAL_AND_SAVE = 'CLOSE_MODAL_AND_SAVE'
+
+export function promptModal (modalType) {
+  return function (dispatch, getState) {
+    const actions = [
+      {
+        type: PROMPT_MODAL,
+        modalType
+      }
+    ]
+    if (modalType === 'new project') {
+      actions.unshift({
+        type: NEW_PROJECT
+      })
+    }
+    dispatch(actions)
+  }
+}
+
+export function closeModalAndCancel () {
+  return function (dispatch, getState) {
+    dispatch(
+      {
+        type: CLOSE_MODAL_AND_CANCEL
+      }
+    )
+  }
+}
+
+export function closeModalAndSave () {
+  return function (dispatch, getState) {
+    switch (getState().expeditions.getIn(['modal', 'type'])) {
+      case 'new project': {
+        const name = getState().expeditions.getIn(['currentProject', 'name'])
+        return dispatch(saveProject(name, () => {
+          dispatch(
+            {
+              type: CLOSE_MODAL_AND_SAVE
+            }
+          )
+        })) 
+      }
+    }
+  }
+}
+
+function saveProject (name, callback) {
+  return function (dispatch, getState) {
+    FKApiClient.createProjects(name)
+      .then(res => {
+        dispatch({
+          type: SAVE_PROJECT,
+          id: res.slug
+        })
+        callback()
+      })
+      .catch(error => {
+        dispatch({
+          type: SET_ERROR,
+          errors: I.fromJS(error.message)
+        })
+      })
   }
 }
 

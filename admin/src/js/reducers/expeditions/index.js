@@ -9,9 +9,7 @@ export const initialState = I.fromJS({
   errors: null,
   suggestedMembers: null,
   modal: {
-    type: null,
-    nextAction: null,
-    nextPath: null
+    type: null
   },
   currentProject: null,
   currentExpedition: null,
@@ -33,7 +31,7 @@ export const initialState = I.fromJS({
 const expeditionReducer = (state = initialState, action) => {
 
   console.log('reducer:', action.type, action)
-  try {
+  // try {
     switch (action.type) {
       case actions.RECEIVE_USER: {
         return state.set('user', action.user)
@@ -51,6 +49,36 @@ const expeditionReducer = (state = initialState, action) => {
       case actions.SET_ERROR: {
         return state
           .set('errors', action.errors)
+      }
+
+      case actions.PROMPT_MODAL: {      
+        return state
+          .setIn(['modal', 'type'], action.modalType)
+      }
+
+      case actions.CLOSE_MODAL_AND_CANCEL: {
+        switch (state.getIn(['modal', 'type'])) {
+          case 'new project': {
+            return state
+              .set('currentProject', null)
+              .setIn(['modal', 'type'], null)
+          }
+          default: {
+            return state
+          }
+        }
+      }
+
+      case actions.CLOSE_MODAL_AND_SAVE: {
+        switch (state.getIn(['modal', 'type'])) {
+          case 'new project': {
+            return state
+              .setIn(['modal', 'type'], null)
+          }
+          default: {
+            return state
+          }
+        }
       }
 
       case actions.RECEIVE_PROJECTS: {
@@ -77,6 +105,7 @@ const expeditionReducer = (state = initialState, action) => {
             I.fromJS({
               id: projectID,
               name: 'Project Name',
+              description: 'Project Description',
               expeditions: []
             })
           )
@@ -97,6 +126,7 @@ const expeditionReducer = (state = initialState, action) => {
 
       case actions.SAVE_PROJECT: {
         return state
+          .setIn(['currentProject', 'id'], action.id)
           .setIn(
             ['projects', action.id],
             state.get('currentProject')
@@ -190,139 +220,12 @@ const expeditionReducer = (state = initialState, action) => {
           // )
       }
 
-
-      // case actions.START_EDITING_TEAM: {
-      //   if (!state.get('editedTeam')) {
-      //     const currentTeam = state.getIn(['teams', state.get('currentTeamID')])
-      //     return state
-      //       .set(
-      //         'editedTeam',
-      //         I.fromJS({
-      //           name: currentTeam.get('name'),
-      //           description: currentTeam.get('description'),
-      //           members: currentTeam.get('members')
-      //         })
-      //       )
-      //       .setIn(
-      //         ['teams', state.get('currentTeamID'), 'status'],
-      //         'editing'
-      //       )
-      //   } else return state
-      // }
-
-      // case actions.STOP_EDITING_TEAM: {
-      //   return state.setIn(
-      //     ['teams', state.get('currentTeamID'), 'status'],
-      //     'ready'
-      //   )
-      // }
-
-      // case actions.SET_TEAM_PROPERTY: {
-      //   return state.setIn(
-      //     ['teams', state.get('currentTeamID'), action.key],
-      //     action.value
-      //   )
-      // }
-
-      // case actions.SET_MEMBER_PROPERTY: {
-      //   return state.setIn(
-      //     ['teams', state.get('currentTeamID'), 'members', action.memberID, action.key],
-      //     action.value
-      //   )
-      // }
-
-      // case actions.SAVE_CHANGES_TO_TEAM: {
-      //   return state
-      //     .set('editedTeam', null)
-      //     .setIn(
-      //       ['teams', state.get('currentTeamID'), 'status'],
-      //       'ready'
-      //     ) 
-      //     .setIn(
-      //       ['teams', state.get('currentTeamID'), 'new'],
-      //       false
-      //     )
-      // }
-
-      // case actions.CLEAR_CHANGES_TO_TEAM: {
-      //   let newTeam = state.getIn(['teams', state.get('currentTeamID')])
-      //   state.getIn(['teams', state.get('currentTeamID')])
-      //     .forEach((p, i) => {
-      //       if (state.get('editedTeam').has(i)) {
-      //         newTeam = newTeam.set(i, state.getIn(['editedTeam', i]))
-      //       }
-      //     })
-      //   return state
-      //     .set('editedTeam', null)
-      //     .setIn(
-      //       ['teams', state.get('currentTeamID')],
-      //       newTeam
-      //     )
-      // }
-
-      // case actions.PROMPT_MODAL_CONFIRM_CHANGES: {
-      //   return state
-      //     .setIn(['modal', 'type'], 'confirm_changes')
-      //     .setIn(['modal', 'nextAction'], I.fromJS(action.nextAction))
-      //     .setIn(['modal', 'nextPath'], action.nextPath)
-      // }
-
-      // case actions.CLEAR_MODAL: {
-      //   return state
-      //     .setIn(['modal', 'type'], null)
-      //     .setIn(['modal', 'nextPath'], null)
-      //     .setIn(['modal', 'nextAction'], null)
-      // }
-
-      // case actions.RECEIVE_SUGGESTED_MEMBERS: {
-      //   return state
-      //     .set('suggestedMembers', action.members)
-      // }
-
-      // case actions.CLEAR_SUGGESTED_MEMBERS: {
-      //   return state
-      //     .set('suggestedMembers', null)
-      // }
-
-      // case actions.FETCH_SUGGESTED_MEMBERS: {
-      //   return state
-      //     .setIn(
-      //       ['teams', state.get('currentTeamID'), 'selectedMember'], 
-      //       null
-      //     )
-      // }
-
-      // case actions.ADD_MEMBER: {
-      //   let newState = state
-      //     .setIn(
-      //       ['teams', state.get('currentTeamID'), 'selectedMember'], 
-      //       null
-      //     )
-      //   if (!state.getIn(['teams', state.get('currentTeamID'), 'members']).has(action.id)) {
-      //     newState = newState.setIn(
-      //       ['teams', state.get('currentTeamID'), 'members', action.id], 
-      //       I.fromJS({
-      //         id: action.id,
-      //         role: 'Team Member'
-      //       })
-      //     )
-      //   }
-      //   return newState        
-      // }
-
-      // case actions.REMOVE_MEMBER: {
-      //   return state
-      //     .deleteIn(
-      //       ['teams', state.get('currentTeamID'), 'members', action.id]
-      //     )
-      // }
-
       default:
         return state
     }
-  } catch (err) {
-    console.log('error in reducer:', err)
-  }
+  // } catch (err) {
+  //   console.log('error in reducer:', err)
+  // }
 }
 
 export default expeditionReducer

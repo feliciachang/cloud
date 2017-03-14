@@ -1,44 +1,108 @@
-import React, {PropTypes} from 'react'
+
+import React from 'react'
 
 class Modal extends React.Component {
+  constructor (props) {
+    super(props)
+    this.getContent = this.getContent.bind(this)
+  }
 
-  render () {
-
-    const { 
-      modal,
-      saveChangesAndResume,
-      cancelAction
+  getContent () {
+    const {
+      type,
+      properties,
+      setProjectProperty,
+      closeModalAndCancel,
+      closeModalAndSave
     } = this.props
+    switch (type) {
+      case ('new project') : {
+        const name = properties.get('name')
+        const description = properties.get('description')
 
-    return (
-      <div className="modal-container">
-        <div className="modal">
-          <p>
-            Please save or cancel your changes to [] first.
-          </p>
-          <div className="actions">
-            <div 
-              className="button secondary"
-              onClick={ cancelAction }
-            >
-              Cancel
+        return (
+          <div>
+            <div className="header">
+              <h2>
+                Create new project
+              </h2>
             </div>
-            <div 
-              className="button primary"
-              onClick={ saveChangesAndResume }
-            >
-              Save changes
+            <div className="content">
+              <div className="field">
+                <p className="label">
+                  Name:
+                </p>
+                <input 
+                  type="text"
+                  className={
+                    '' +
+                    (!!name && name.toLowerCase() !== 'project name' ? '' : ' default')
+                  }
+                  value={name}
+                  onFocus={(e) => {
+                    if (!name || name === 'Project Name') {
+                      setProjectProperty(['name'], '')
+                    }
+                  }}
+                  onChange={(e) => {
+                    setProjectProperty(['name'], e.target.value)
+                  }}
+                />
+                <p className="error"></p>
+              </div>
+              <div className="field">
+                <p className="label">
+                  Description:
+                </p>
+                <input 
+                  type="text"
+                  className={
+                    '' +
+                    (!!description && description.toLowerCase() !== 'project description' ? '' : ' default')
+                  }
+                  value={description}
+                  onFocus={(e) => {
+                    if (!description || description === 'Project Description') {
+                      setProjectProperty(['description'], '')
+                    }
+                  }}
+                  onChange={(e) => {
+                    setProjectProperty(['description'], e.target.value)
+                  }}
+                />
+                <p className="error"></p>
+              </div>
+            </div>
+            <div className="actions">
+              <div
+                className="button"
+                onClick={ closeModalAndCancel }
+              >
+                Cancel
+              </div>
+              <div
+                className="button"
+                onClick={ closeModalAndSave }
+              >
+                Save
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    )
+        )
+      }
+      default : {
+        return null
+      }
+    }
   }
-}
 
-Modal.propTypes = {
-  saveChangesToTeam: PropTypes.func.isRequired,
-  clearChangesToTeam: PropTypes.func.isRequired
+  render () {
+    return (
+      <div className="modal">
+        { this.getContent() }
+      </div>
+    )    
+  }
 }
 
 export default Modal

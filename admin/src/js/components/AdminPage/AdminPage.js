@@ -1,5 +1,6 @@
 import React, {PropTypes, Children} from 'react'
 import { Link } from 'react-router'
+import ModalContainer from '../../containers/AdminPage/Modal'
 
 class AdminPage extends React.Component {
 
@@ -9,9 +10,6 @@ class AdminPage extends React.Component {
       params,
       errors,
       location,
-      modal,
-      cancelAction,
-      saveChangesAndResume,
       expeditions,
       projects,
       breadcrumbs,
@@ -19,34 +17,18 @@ class AdminPage extends React.Component {
       requestSignOut
     } = this.props
 
-    const modalProps = {
-      modal,
-      cancelAction,
-      saveChangesAndResume
-    }
-
     const children = Children.map(this.props.children,
       (child) => React.cloneElement(child, {
         errors
       })
-    )
-
-    const modalComponent = () => {
-      if (!!modal.get('type')) {
-        return (
-          <Modal { ...modalProps } />
-        )
-      } else {
-        return null
-      }
-    }
-    
+    )    
     
     return (
       <div
         id="admin-page"
         className="page"
       >
+        <ModalContainer/>
         { children }
       </div>
     )
