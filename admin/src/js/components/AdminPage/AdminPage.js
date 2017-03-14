@@ -1,6 +1,6 @@
 import React, {PropTypes, Children} from 'react'
 import { Link } from 'react-router'
-import ModalContainer from '../../containers/AdminPage/Modal'
+import ModalContainer from '../../containers/AdminPage/Modal/Modal'
 
 class AdminPage extends React.Component {
 

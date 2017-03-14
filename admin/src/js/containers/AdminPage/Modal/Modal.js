@@ -1,7 +1,7 @@
 
 import { connect } from 'react-redux'
-import Modal from '../../components/AdminPage/Modal'
-import * as actions from '../../actions'
+import Modal from '../../../components/AdminPage/Modal/Modal'
+import * as actions from '../../../actions'
 import I from 'immutable'
 
 const mapStateToProps = (state, ownProps) => {
@@ -27,10 +27,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     setProjectProperty (key, value) {
       return dispatch(actions.setProjectProperty(key, value))
     },
-    closeModalAndCancel () {
+    closeAndCancel () {
       return dispatch(actions.closeModalAndCancel())
     },
-    closeModalAndSave () {
+    closeAndSave () {
       return dispatch(actions.closeModalAndSave())
     }
   }
